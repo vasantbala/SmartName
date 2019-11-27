@@ -99,7 +99,7 @@ namespace SmartNamePlate.PCCompanion
             string logEntry = string.Format("Session Changed: {0}", changeDescription.Reason.ToString());
             eventLog.WriteEntry(logEntry);
             Logger.WriteLog("SNP.Service", logEntry);
-            await hubClient.Send(logEntry);
+            await hubClient.Send(changeDescription.Reason.ToString());
         }
     }
 }
