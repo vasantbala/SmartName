@@ -3,3 +3,9 @@
 ################################################################################
 
 /.vs
+/packages
+/SmartNamePlate.PCCompanion/bin/Debug
+/SmartNamePlate.PCCompanion/obj
+/SmartNamePlate.Web/bin
+/SmartNamePlate.Web/obj
+/SmartNamePlate.Web/Properties
