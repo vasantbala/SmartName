@@ -8,7 +8,6 @@ namespace SmartNamePlate.PCCompanion
 {
     public class Logger
     {
-        private static readonly string LOG_FILE = @"C:\temp\SNP.log";
 		private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static void WriteLog(string caller, string message)
