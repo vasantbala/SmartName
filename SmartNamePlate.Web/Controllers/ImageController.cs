@@ -18,18 +18,23 @@ namespace SmartNamePlate.Web.Controllers
         [Route("GetImageOfTheDay")]
         public async Task<string> GetImageOfTheDay()
         {
-            string cachedImage = MemCache.Instance.Get("bingImage") as string;
-
-            if (string.IsNullOrEmpty(cachedImage))
+            string filePath = "bingImage.jpg";
+            try
             {
-                string bingImage = await Utils.GetAsync("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1");
-                dynamic json = JsonConvert.DeserializeObject<ExpandoObject>(bingImage);
-                string imgUrl = System.IO.Path.Join("https://www.bing.com", json.images[0].url);
-                byte[] imgBytes = await Utils.GetBytesAsync(imgUrl);
-                cachedImage = Convert.ToBase64String(imgBytes);
-                MemCache.Instance.AddOrReplace("bingImage", cachedImage);
+                if (System.IO.File.Exists(".\\wwwroot\\images\\bingImage.jpg") == false)
+                {
+                    string bingImage = await Utils.GetAsync("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1");
+                    dynamic json = JsonConvert.DeserializeObject<ExpandoObject>(bingImage);
+                    string imgUrl = System.IO.Path.Join("https://www.bing.com", json.images[0].url);
+                    byte[] imgBytes = await Utils.GetBytesAsync(imgUrl);
+                    await System.IO.File.WriteAllBytesAsync(".\\wwwroot\\images\\bingImage.jpg", imgBytes);
+                }
             }
-            return cachedImage;
+            catch
+            {
+                filePath = "defaultImage.jpg";
+            }
+            return filePath;
         }
     }
 }

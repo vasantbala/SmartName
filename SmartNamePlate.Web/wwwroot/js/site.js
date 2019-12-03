@@ -3,3 +3,7 @@
 
 // Write your Javascript code.
 
+@font-face{
+    font-family: "Blackjack";
+    src: url("./fonts/blackjack.woff");
+}

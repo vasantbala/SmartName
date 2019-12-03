@@ -2,23 +2,46 @@
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/smartNamePlateHub").build();
 
+var clientsCount = 0;
+
 //Disable send button until connection is established 
-document.getElementById("divAvailable").style.display = 'flex';
-document.getElementById("divAway").style.display = 'none';
+//document.getElementById("divAvailable").style.display = 'flex';
+//document.getElementById("divAway").style.display = 'none';
 
 
 connection.on("ReceiveMessage", function (user, message) {
     if (message === 'SessionUnlock'
         || message === 'SessionLogon'
         || message === 'RemoteConnect') {
-        document.getElementById("divAvailable").style.display = 'flex';
-        document.getElementById("divAway").style.display = 'none';
+        $("#imgstatus").attr("src", "./images/status_available.png");
+        $("#txtStatus").text('Available');
     }
     else {
-        document.getElementById("divAvailable").style.display = 'none';
-        document.getElementById("divAway").style.display = 'flex';
+        $("#imgstatus").attr("src", "./images/status_away.png");
+        $("#txtStatus").text('Away');
     }
-    document.getElementById("divTest").innerText = message;
+});
+
+connection.on("ConnectionMessage", function (user, message) {
+    if (connection.connectionId !== user) {
+        console.log('ConnectionMessage from ' + user);
+        clientsCount++;
+        if (clientsCount > 0) {
+            $('#divstatus').show();
+        }
+    }
+    
+});
+
+connection.on("DisconnectionMessage", function (user, message) {
+    if (connection.connectionId !== user) {
+        console.log('DisconnectionMessage from ' + user);
+        clientsCount--;
+        if (clientsCount < 0) {
+            $('#divstatus').hide();
+        }
+    }
+    
 });
 
 connection.start().then(function () {
@@ -28,8 +51,15 @@ connection.start().then(function () {
 });
 
 $(document).ready(function () {
+
+    $('#divstatus').hide();
+
     $.get("api/image/getimageoftheday", function (data) {
-        var i = "data: image/png;base64," + data;
-        document.body.style.backgroundImage =i;
+        var url = './images/' + data;
+        console.log(url);
+        $('body').css("background-image", "url('" + url + "')");
+        $('body').css("background-size", "cover");
+        //$('body').css("opacity", "0.5");
+        $('body').css("background-repeat", "no-repeat");
     });
 });

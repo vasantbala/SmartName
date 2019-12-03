@@ -52,5 +52,12 @@ namespace SmartNamePlate.Web.Common
             }
         }
 
+        public void Remove(string key)
+        {
+            if (_cache.ContainsKey(key))
+            {
+                _cache.Remove(key);
+            }
+        }
     }
 }
