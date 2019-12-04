@@ -55,7 +55,7 @@ $(document).ready(function () {
     $('#divstatus').hide();
 
     $.get("api/image/getimageoftheday", function (data) {
-        var url = './images/' + data;
+        var url = './images/' + data + "?preventcache=" + $.now();
         console.log(url);
         $('body').css("background-image", "url('" + url + "')");
         $('body').css("background-size", "cover");
