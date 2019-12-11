@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +33,7 @@ namespace SmartNamePlate.Web.Controllers
                     string imgUrl = System.IO.Path.Join("https://www.bing.com", json.images[0].url);
                     byte[] imgBytes = await Utils.GetBytesAsync(imgUrl);
                     await System.IO.File.WriteAllBytesAsync(bingImagePath, imgBytes);
+                    System.IO.File.SetLastWriteTime(bingImagePath, DateTime.Now.AddDays(-1));
                 }
             }
             catch
@@ -39,6 +41,29 @@ namespace SmartNamePlate.Web.Controllers
                 filePath = "defaultImage.jpg";
             }
             return filePath;
+        }
+
+        [Route("GetBingImageDetails")]
+        public async Task<string> GetBingImageDetails()
+        {
+            string returnValue = string.Empty;
+            string bingImagePath = ".\\wwwroot\\images\\bingImage.jpg";
+            StringBuilder stringBuilder = new StringBuilder();
+            try
+            {
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(bingImagePath);
+                stringBuilder.Append(string.Format("Name: {0}", fileInfo.Name));
+                stringBuilder.Append(string.Format("Full Name: {0}", fileInfo.FullName));
+                stringBuilder.Append(string.Format("LastWriteTime.Date: {0}", fileInfo.LastWriteTime.Date));
+                stringBuilder.Append(string.Format("DateTime.Now.Date: {0}", DateTime.Now.Date));
+                stringBuilder.Append(string.Format("CreationTime.Date: {0}", fileInfo.CreationTime.Date));
+                returnValue = stringBuilder.ToString();
+            }
+            catch (Exception ex)
+            {
+                returnValue = ex.Message + ex.StackTrace;
+            }
+            return returnValue;
         }
     }
 }
