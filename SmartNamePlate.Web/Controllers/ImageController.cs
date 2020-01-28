@@ -21,28 +21,40 @@ namespace SmartNamePlate.Web.Controllers
         {
             string filePath = "bingImage.jpg";
 			string bingImagePath = ".\\wwwroot\\images\\bingImage.jpg";
-            try
-            {
-				System.IO.FileInfo fileInfo = new System.IO.FileInfo(bingImagePath);
-				
-                if (System.IO.File.Exists(bingImagePath) == false
-					|| fileInfo.CreationTime.Date < DateTime.Now.Date)
-                {
-					System.IO.File.Delete(bingImagePath);
+			byte[] imgBytes = await System.IO.File.ReadAllBytesAsync(".\\wwwroot\\images\\defaultImage.jpg");
 
-                    string bingImage = await Utils.GetAsync("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1");
-                    dynamic json = JsonConvert.DeserializeObject<ExpandoObject>(bingImage);
-                    string imgUrl = System.IO.Path.Join("https://www.bing.com", json.images[0].url);
-                    byte[] imgBytes = await Utils.GetBytesAsync(imgUrl);
-                    await System.IO.File.WriteAllBytesAsync(bingImagePath, imgBytes);
-                    //System.IO.File.SetLastWriteTime(bingImagePath, DateTime.Now.AddDays(-1));
-                }
+			try
+            {
+				string bingImage = await Utils.GetAsync("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1");
+				dynamic json = JsonConvert.DeserializeObject<ExpandoObject>(bingImage);
+				string imgUrl = System.IO.Path.Join("https://www.bing.com", json.images[0].url);
+				imgBytes = await Utils.GetBytesAsync(imgUrl);
+
+				//System.IO.FileInfo fileInfo = new System.IO.FileInfo(bingImagePath);
+				
+    //            if (System.IO.File.Exists(bingImagePath) == false
+				//	|| fileInfo.CreationTime.Date < DateTime.Now.Date)
+    //            {
+				//	if (System.IO.File.Exists(bingImagePath)) 
+				//	{
+				//		System.IO.File.Delete(bingImagePath);
+				//	}
+
+    //                string bingImage = await Utils.GetAsync("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1");
+    //                dynamic json = JsonConvert.DeserializeObject<ExpandoObject>(bingImage);
+    //                string imgUrl = System.IO.Path.Join("https://www.bing.com", json.images[0].url);
+    //                imgBytes = await Utils.GetBytesAsync(imgUrl);
+				//	//await System.IO.File.WriteAllBytesAsync(bingImagePath, imgBytes);
+    //                //System.IO.File.SetLastWriteTime(bingImagePath, DateTime.Now.AddDays(-1));
+    //            }
             }
-            catch
+            catch(Exception ex)
             {
                 filePath = "defaultImage.jpg";
-            }
-            return filePath;
+				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.StackTrace);
+			}
+            return Convert.ToBase64String(imgBytes);
         }
 
         [Route("GetBingImageDetails")]

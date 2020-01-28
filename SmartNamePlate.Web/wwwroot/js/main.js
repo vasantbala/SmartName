@@ -4,12 +4,26 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/smartNamePlateHub"
 
 var clientsCount = 0;
 
+var lastRefreshDate = new Date().toDateString();
+//console.log('Last refresh date is init to ' + lastRefreshDate);
+
 //Disable send button until connection is established 
 //document.getElementById("divAvailable").style.display = 'flex';
 //document.getElementById("divAway").style.display = 'none';
 
 
 connection.on("ReceiveMessage", function (user, message) {
+    //console.log('Checking last refresh date ' + new Date().toDateString());
+    if (lastRefreshDate < new Date().toDateString()) {
+        $.get("api/image/getimageoftheday", function (data) {
+
+            $('body').css('background', 'url(data:image/jpg;base64,' + data + ')');
+            $('body').css("background-size", "cover");
+            $('body').css("background-repeat", "no-repeat");
+            lastRefreshDate = new Date().toDateString();
+        });
+    }
+
     if (message === 'SessionUnlock'
         || message === 'SessionLogon'
         || message === 'RemoteConnect') {
@@ -55,11 +69,15 @@ $(document).ready(function () {
     $('#divstatus').hide();
 
     $.get("api/image/getimageoftheday", function (data) {
-        var url = './images/' + data + "?preventcache=" + $.now();
+
+        $('body').css('background', 'url(data:image/jpg;base64,' + data + ')');
+        $('body').css("background-size", "cover");
+        $('body').css("background-repeat", "no-repeat");
+        /*var url = './images/' + data + "?preventcache=" + $.now();
         console.log(url);
         $('body').css("background-image", "url('" + url + "')");
         $('body').css("background-size", "cover");
         //$('body').css("opacity", "0.5");
-        $('body').css("background-repeat", "no-repeat");
+        $('body').css("background-repeat", "no-repeat");*/
     });
 });
